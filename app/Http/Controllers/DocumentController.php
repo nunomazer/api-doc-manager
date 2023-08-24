@@ -235,17 +235,12 @@ class DocumentController extends Controller
     public function download($id)
     {
         try{
-            $data = [
-                'document' => Document::findOrFail($id)
-            ];
-
-            $pdf = PDF::loadView('pdf-document',$data);
+            $pdf = $this->documentService->pdf($id);
             return $pdf->download('pdf-document.pdf');
         } catch(ModelNotFoundException $e){
-            return response()->json(['errors' => 'Document not found'], 400);
+            return $this->apiService->errorRecordNotFoundResponse();
         } catch (\Exception $e){
-            log::error('Update Document Exception - '. $e);
-            return response()->json(['errors' => 'server error, try again'], 500);
+            return $this->apiService->errorResponse();
         }
 
     }

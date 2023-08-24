@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Document;
 use App\Services\Interfaces\DocumentInterface;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 
 class DocumentService implements DocumentInterface
@@ -77,5 +79,20 @@ class DocumentService implements DocumentInterface
     public function getAll(): Collection
     {
         return Document::all();
+    }
+
+    public function pdf(int $id): PDF
+    {
+        try{
+            $data = [
+                'document' => Document::findOrFail($id)
+            ];
+
+            return PDF::loadView('pdf-document',$data);
+        } catch (\Exception $e){
+            log::error('Generate PDF Document Exception');
+            log::error($e);
+            throw $e;
+        }
     }
 }
